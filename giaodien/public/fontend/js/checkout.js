@@ -55,7 +55,6 @@ function createOrder() {
         contentType: 'application/json',
         data: JSON.stringify(orderData),
         success: function(response) {
-            alert('Đơn hàng được tạo thành công!');
             localStorage.removeItem('cart');
             window.location.href = '/thankyou';
         },
@@ -66,13 +65,7 @@ function createOrder() {
 }
 
 function handleVNPayPayment() {
-    console.log('Hàm thanh toán VNPay được gọi');
     const amount = totalAmount; // Giả định totalAmount đã được định nghĩa
-
-    if (amount <= 0) {
-        $('#message').text('Vui lòng nhập số tiền hợp lệ!');
-        return;
-    }
 
     $.ajax({
         url: 'http://localhost:8003/api/payment',
@@ -80,7 +73,7 @@ function handleVNPayPayment() {
         contentType: 'application/json',
         data: JSON.stringify({ amount: amount, method: 'vnpay' }),
         success: function(data) {
-            if (data.success) {
+            if (data.message=='success') {
                 localStorage.removeItem('cart');
                 window.location.assign(data.data);
             } else {
@@ -93,9 +86,3 @@ function handleVNPayPayment() {
         }
     });
 }
-
-// function handleCODPayment() {
-//     console.log('Hàm thanh toán COD được gọi');
-//     localStorage.removeItem("cart");
-//     window.location.href = "/thankyou"; 
-// }

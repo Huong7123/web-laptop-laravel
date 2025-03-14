@@ -285,41 +285,42 @@
             //tìm kiếm đơn hàng
             $('#search-order').on('keypress', function(event) {
                 event.preventDefault();
-                const orderCode = $(this).val();
-
-                $.ajax({
-                    url: `http://localhost:8004/api/orders/search?order_code=${encodeURIComponent(orderCode)}`, // URL API
-                    type: 'GET',
-                    success: function(data) {
-                        console.log(data); // Xem phản hồi từ API
-
-                        const orders = $('#orders-table');
-                        orders.empty(); 
-
-                        if (data.order) {
-                            row= `
-                                <tr>
-                                    <td>${data.order.order_code}</td>
-                                    <td>${data.order.customer_name}</td>
-                                    <td>${data.order.address}</td>
-                                    <td>${data.order.phone}</td>
-                                    <td>${data.order.payment_method}</td>
-                                    <td>${data.order.total_amount}</td>
-                                    <td>${data.order.status}</td>
-                                    <td>
-                                        <button class="btn btn-info show-detail" data-id="${data.order.order_id}">Xem</button>
-                                        ${data.order.status === 'completed' ? '' : `<button class="btn btn-danger update-status" data-id="${data.order.order_id}">Cập nhật</button>`}
-                                    </td>
-                                </tr>
-                            `;
-                            orders.append(row);
-                        };
-                    },
-                    error: function(xhr) {
-                        console.error('Có lỗi xảy ra:', xhr);
-                        alert(xhr.responseJSON.message || 'Có lỗi xảy ra.');
-                    }
-                });
+                const orderCodeInput = $(this).val();
+                orderCode ='#' + orderCodeInput;
+                if (event.which === 13) {
+                    $.ajax({
+                        url: `http://localhost:8004/api/orders-search/`, // URL API
+                        type: 'GET',
+                        data: {order_code: orderCode},
+                        success: function(data) {
+                            console.log(data); // Xem phản hồi từ API
+                            const orders = $('#orders-table');
+                            orders.empty(); 
+                            if (data) {
+                                row= `
+                                    <tr>
+                                        <td>${data.order_code}</td>
+                                        <td>${data.customer_name}</td>
+                                        <td>${data.address}</td>
+                                        <td>${data.phone}</td>
+                                        <td>${data.payment_method}</td>
+                                        <td>${data.total_amount}</td>
+                                        <td>${data.status}</td>
+                                        <td>
+                                            <button class="btn btn-info show-detail" data-id="${data.order_id}">Xem</button>
+                                            ${data.status === 'completed' ? '' : `<button class="btn btn-danger update-status" data-id="${data.order_id}">Cập nhật</button>`}
+                                        </td>
+                                    </tr>
+                                `;
+                                orders.append(row);
+                            };
+                        },
+                        error: function(xhr) {
+                            console.error('Có lỗi xảy ra:', xhr);
+                            alert(xhr.responseJSON.message || 'Có lỗi xảy ra.');
+                        }
+                    });
+                }
             })
         });
     </script>

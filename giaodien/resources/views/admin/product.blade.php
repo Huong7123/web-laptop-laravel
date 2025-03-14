@@ -86,9 +86,9 @@
             <h1>Danh sách sản phẩm</h1>
             <div style="display: flex; justify-content: space-between;">
                 <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm Sản Phẩm</button>
-                <!-- <form id="search-form" class="search-bar">
-                    <input type="text" id="search" class="search-input" placeholder="Tìm kiếm...">
-                </form> -->
+                <form id="search-form" style="margin-bottom: 10px;">
+                    <input type="text" id="search-product" class="search-input" placeholder="Tìm kiếm...">
+                </form>
             </div>
             <table class="table table-bordered mt-3">
                 <thead>
@@ -408,7 +408,46 @@
             
         });
 
-    
+        //tìm kiếm
+        $('#search-product').on('keypress', function(event) {
+            if (event.which === 13) { // Kiểm tra nếu phím Enter được nhấn
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter
+                const keyword = $(this).val();
+
+                if (keyword.length >= 2) { // Tìm kiếm khi có ít nhất 2 ký tự
+                    $.ajax({
+                        url: 'http://127.0.0.1:8000/api/v1/products/search',
+                        type: 'GET',
+                        data: { keyword: keyword },
+                        success: function(data) {
+                            $('#productTable').empty(); // Xóa kết quả trước đó
+                            data.forEach(function(product) {
+                                const productHTML = `
+                                    <tr>
+                                        <td>${product.product_id}</td>
+                                        <td>${product.product_name}</td>
+                                        <td>${product.price}</td>
+                                        <td><img src="/fontend/images/product/${product.image_url}" alt="${product.product_name}" style="width: 50px; height: auto;"></td>
+                                        <td>${product.category.category_name}</td>
+                                        <td>${product.discount ? product.discount.discount_percent +"%" : 'Không có'}</td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm edit-product" data-id="${product.product_id}">Sửa</button>
+                                            <button class="btn btn-danger btn-sm delete-product" data-id="${product.product_id}">Xóa</button>
+                                        </td>
+                                    </tr>
+                                `;
+                                
+                                $('#productTable').append(productHTML);
+                            });
+                        },
+                        error: function(xhr) {
+                            console.error(xhr);
+                        }
+                    });
+                }
+            }
+        });
+
     </script>
     
 </body>

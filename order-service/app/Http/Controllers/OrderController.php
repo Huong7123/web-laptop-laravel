@@ -112,13 +112,13 @@ class OrderController extends Controller
     }
 
     //tìm kiếm theo mã đơn hàng
-    public function searchOrderByCode($orderCode){
-        
-        $order = Order::where('order_code', $orderCode)->first();
+    public function searchOrderByCode(Request $request){
+        $orderCode = $request->input('order_code');
+        $order = Order::where('order_code', '=', $orderCode)->first();
         if (!$order) {
             return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
         }
-        return response()->json(['order' => $order]);
+        return response()->json($order);
     }
 
 }

@@ -186,7 +186,7 @@ class ProductController extends Controller
     {
         $keyword = $request->input('keyword');
 
-        $products = Product::where('product_name', 'LIKE', "%{$keyword}%")->get();
+        $products = Product::with(['category', 'discount'])->where('product_name', 'LIKE', "%{$keyword}%")->get();
 
         return response()->json($products);
     }

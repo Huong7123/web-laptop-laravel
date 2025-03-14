@@ -71,7 +71,6 @@
         var userId = user.id;
         inforCustomer(userId);
         vnpayBtn.addEventListener('click', () =>{
-            createOrder();
             handleVNPayPayment();
         });
         codBtn.addEventListener('click',() =>{

@@ -62,7 +62,7 @@
                             <td>${order.status}</td>
                             <td>
                                 <button class="btn btn-info show-detail" data-id="${order.order_id}">Xem</button>
-                                ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-order-id="${order.order_id}">Hủy</button>`}
+                                ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-id="${order.order_id}">Hủy</button>`}
                             </td>
                         </tr>
                     `;
@@ -97,6 +97,7 @@
                             <th>Hành Động</th>
                         </tr>
                     `
+                    orderHead.append(header);
                     const orders = $('#orders-table');
                     orders.empty(); 
                     response.order.forEach(function(order) {
@@ -111,7 +112,7 @@
                                 <td>${order.status}</td>
                                 <td>
                                     <button class="btn btn-info show-detail" data-id="${order.order_id}">Xem</button>
-                                    ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-order-id="${order.order_id}">Hủy</button>`}
+                                    ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-id="${order.order_id}">Hủy</button>`}
                                 </td>
                             </tr>
                         `;
@@ -162,7 +163,7 @@
                                 <td>${order.status}</td>
                                 <td>
                                     <button class="btn btn-info show-detail" data-id="${order.order_id}">Xem</button>
-                                    ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-order-id="${order.order_id}">Hủy</button>`}
+                                    ${order.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-id="${order.order_id}">Hủy</button>`}
                                 </td>
                             </tr>
                         `;
@@ -179,21 +180,27 @@
         $(document).on('click', '.delete-order', function(event) {
             var orderId = $(this).data('id');
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                url: 'http://localhost:8004/api/orders/' + orderId,
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json'
-                },
-                success: function(response) {
-                    alert('Hủy đơn hàng thành công!');
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText);
-                }
-            });
+            var confirmDelete = confirm("Bạn có chắc chắn muốn hủy đơn hàng không?");
+            if(confirmDelete){
+                $.ajax({
+                    url: 'http://localhost:8004/api/orders/' + orderId,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    success: function(response) {
+                        alert('Hủy đơn hàng thành công!');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+            else{
+
+            }
         });
 
         //xem chi tiết đơn hàng
@@ -232,6 +239,47 @@
                 }
             });
         });
+
+        //tìm kiếm đơn hàng
+        $('#search-order').on('keypress', function(event) {
+            event.preventDefault();
+            const orderCodeInput = $(this).val();
+            orderCode ='#' + orderCodeInput;
+            if (event.which === 13) {
+                $.ajax({
+                    url: `http://localhost:8004/api/orders-search/`, // URL API
+                    type: 'GET',
+                    data: {order_code: orderCode},
+                    success: function(data) {
+                        console.log(data);
+                        const orders = $('#orders-table');
+                        orders.empty(); 
+                        if (data) {
+                            row= `
+                                <tr>
+                                    <td>${data.order_code}</td>
+                                    <td>${data.customer_name}</td>
+                                    <td>${data.address}</td>
+                                    <td>${data.phone}</td>
+                                    <td>${data.payment_method}</td>
+                                    <td>${data.total_amount}</td>
+                                    <td>${data.status}</td>
+                                    <td>
+                                        <button class="btn btn-info show-detail" data-id="${data.order_id}">Xem</button>
+                                        ${data.status === 'completed' ? '' : `<button class="btn btn-danger delete-order" data-id="${data.order_id}">Hủy</button>`}
+                                    </td>
+                                </tr>
+                            `;
+                            orders.append(row);
+                        };
+                    },
+                    error: function(xhr) {
+                        console.error('Có lỗi xảy ra:', xhr);
+                        alert(xhr.responseJSON.message || 'Có lỗi xảy ra.');
+                    }
+                });
+            }
+        })
     });
 </script>
 @endsection

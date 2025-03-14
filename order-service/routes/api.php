@@ -25,7 +25,7 @@ Route::get('/orders-completed-admin', [OrderController::class, 'getOrderComplete
 Route::post('/orders', [OrderController::class, 'store']);                    // Tạo đơn hàng mới
 Route::put('/orders/{id}', [OrderController::class, 'update']);               // Cập nhật trạng thái đơn hàng
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);   //hủy đơn hàng
-Route::get('/orders/search{orderCode}', [OrderController::class, 'searchOrderByCode']); //tìm kiếm đơn hàng theo mã đơn hàng
+Route::get('/orders-search', [OrderController::class, 'searchOrderByCode']); //tìm kiếm đơn hàng theo mã đơn hàng
 
 
 
